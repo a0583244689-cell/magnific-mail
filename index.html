@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>שליחת תמונות למייל</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f6fa;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .panel {
+      background: white;
+      padding: 35px;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px #00294d18;
+      width: min(85%, 420px);
+      text-align: center;
+    }
+    h1 { color: #00294d; font-size: 25px; }
+    p { color: #555; line-height: 1.6; }
+    input, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 14px;
+      border-radius: 9px;
+      font-size: 16px;
+      margin-top: 14px;
+    }
+    input { border: 1px solid #ccd4df; }
+    button {
+      background: #00294d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: #12466e; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>שליחת תמונות ממגניפיק</h1>
+    <p>הדביקי את הקישור לתמונה שבחרת</p>
+    <form id="sendForm">
+      <input id="imageUrl" type="url"
+             placeholder="הדביקי כאן קישור לתמונה"
+             required>
+      <button type="submit">✉ שלחי למייל</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    document.getElementById("sendForm")
+      .addEventListener("submit", function(event) {
+        event.preventDefault();
+        document.getElementById("status").textContent =
+          "הדף מוכן! בשלב הבא נחבר אותו לשליחה מאובטחת.";
+      });
+  </script>
+</body>
+</html>
