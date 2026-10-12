@@ -40,27 +40,81 @@
       cursor: pointer;
     }
     button:hover { background: #12466e; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #status { font-size: 14px; }
   </style>
 </head>
 <body>
   <div class="panel">
     <h1>שליחת תמונות ממגניפיק</h1>
-    <p>הדביקי את הקישור לתמונה שבחרת</p>
+    <p>הדביקי קישור לתמונה והכניסי את הסיסמה שלך</p>
+
     <form id="sendForm">
       <input id="imageUrl" type="url"
              placeholder="הדביקי כאן קישור לתמונה"
              required>
-      <button type="submit">✉ שלחי למייל</button>
+
+      <input id="password" type="password"
+             placeholder="הכניסי סיסמה"
+             autocomplete="off" required>
+
+      <button id="sendButton" type="submit">
+        ✉ שלחי למייל
+      </button>
     </form>
-    <p id="status"></p>
+
+    <p id="status" role="status" aria-live="polite"></p>
   </div>
 
   <script>
+    const endpoint =
+      "https://magnific-mail-gateway.a0583244689.workers.dev/";
+
     document.getElementById("sendForm")
-      .addEventListener("submit", function(event) {
+      .addEventListener("submit", async function(event) {
         event.preventDefault();
-        document.getElementById("status").textContent =
-          "הדף מוכן! בשלב הבא נחבר אותו לשליחה מאובטחת.";
+
+        const imageUrl =
+          document.getElementById("imageUrl").value.trim();
+        const password =
+          document.getElementById("password").value;
+        const status = document.getElementById("status");
+        const button = document.getElementById("sendButton");
+
+        button.disabled = true;
+        status.textContent = "שולחת את הבקשה...";
+
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              image_url: imageUrl,
+              password: password
+            })
+          });
+
+          if (response.status === 401) {
+            status.textContent = "הסיסמה שגויה.";
+          } else if (response.status === 400) {
+            status.textContent =
+              "הקישור לתמונה אינו תקין או אינו נתמך.";
+          } else if (response.ok) {
+            status.textContent =
+              "הבקשה התקבלה! בדקי את המייל בעוד רגע.";
+            document.getElementById("password").value = "";
+          } else {
+            status.textContent =
+              "אירעה שגיאה בשליחה. נסי שוב.";
+          }
+        } catch (error) {
+          status.textContent =
+            "לא ניתן להתחבר לשירות השליחה.";
+        } finally {
+          button.disabled = false;
+        }
       });
   </script>
 </body>
